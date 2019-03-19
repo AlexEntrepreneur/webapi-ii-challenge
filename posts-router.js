@@ -31,6 +31,24 @@ router.get('/:id', (req, res) => {
     }));
 });
 
+router.post('/', (req, res) => {
+  const reqBodyData = { "title": req.body.title, "contents": req.body.contents };
+  const reqBodyDataIsComplete = req.body.title && req.body.contents;
+
+  if (reqBodyDataIsComplete) {
+    db.insert(reqBodyData)
+    .then(data => req.status(201).json(data))
+    .catch(err => res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    }))
+  }
+  else {
+    res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    })
+  }
+});
+
 router.delete('/:id', (req, res) => {
   db.findById(req.params.id)
     .then(data => {
@@ -51,7 +69,5 @@ router.delete('/:id', (req, res) => {
       error: "The post could not be removed"
     }));
 });
-
-
 
 module.exports = router;

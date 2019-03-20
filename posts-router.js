@@ -49,6 +49,33 @@ router.post('/', (req, res) => {
   }
 });
 
+router.put('/:id', (req, res) => {
+  const reqBodyData = { "title": req.body.title, "contents": req.body.contents };
+  const reqBodyDataIsComplete = req.body.title && req.body.contents;
+
+  if (reqBodyDataIsComplete) {
+    db.update(req.params.id, reqBodyData)
+    .then(data => {
+      if (data.length) {
+        req.status(201).json(data);
+      }
+      else {
+        res.status(404).json({
+          message: "The post with the specified ID does not exist."
+        })
+      }
+    })
+    .catch(err => res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    }))
+  }
+  else {
+    res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    })
+  }
+});
+
 router.delete('/:id', (req, res) => {
   db.findById(req.params.id)
     .then(data => {
